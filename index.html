@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="apple-touch-icon" href="https://augustineiacopelli.github.io/appaday/icons/159.png">
+<meta name="apple-mobile-web-app-title" content="Caffeine">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Caffeine Tracker | AppADay 159</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#150e10;--bg2:#1d1417;--card:#241a1d;--card2:#2e2226;--line:#43323a;
+  --accent:#D14D72;--accent-hi:#f08aa6;--accent-dk:#A93757;--accent-dk2:#bd4268;
+  --text:#f6eef0;--muted:#c3b0b7;--ok:#7fd1a0;--warn:#ffb085;--over:#ff8f8f;--lilac:#b9acff;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{min-height:100dvh;display:flex;flex-direction:column;background:radial-gradient(120% 50% at 50% 0%,#2c1a20 0%,var(--bg) 62%) fixed,var(--bg);
+  color:var(--text);font-family:var(--sans);font-size:1.0625rem;line-height:1.45;-webkit-text-size-adjust:100%;overflow-x:hidden}
+body.lock{overflow:hidden}
+a{color:var(--accent-hi)}
+button{font:inherit;color:inherit}
+.topbar{display:flex;align-items:center;gap:.4rem;padding:calc(.55rem + env(safe-area-inset-top)) .75rem .55rem 1rem;
+  background:rgba(21,14,16,.9);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.badge{background:var(--accent-dk);color:#fff;font-weight:700;font-size:.85rem;padding:.25rem .55rem;border-radius:.5rem;letter-spacing:.04em}
+.topbar h1{font-family:var(--serif);font-weight:600;font-size:1.15rem;margin:0 0 0 .3rem;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home{display:inline-flex;align-items:center;min-height:44px;padding:0 .45rem;font-size:.9rem;text-decoration:none}
+.iconbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:none;border:0;cursor:pointer;color:var(--accent-hi);border-radius:.6rem;flex:0 0 auto;font-size:1.6rem;line-height:1}
+.iconbtn:hover{background:rgba(255,255,255,.07)}
+.iconbtn svg{width:22px;height:22px}
+main{flex:1;width:100%;max-width:34rem;margin:0 auto;padding:1rem 1rem 2rem}
+.hero{text-align:center;padding:.4rem 0 .2rem}
+.readout{margin:0;font-family:var(--serif);font-weight:600;line-height:1;color:var(--accent);font-size:clamp(4rem,22vw,6.5rem);font-variant-numeric:tabular-nums}
+.readout .unit{font-size:.28em;margin-left:.2em;color:var(--accent-hi);font-weight:500}
+.caption{margin:.3rem 0 0;color:var(--muted);font-size:.95rem}
+.absorb{margin:.15rem 0 0;min-height:1.3em;color:var(--accent-hi);font-size:.9rem}
+.verdict{margin:.4rem auto 0;max-width:28rem;font-size:1rem;min-height:2.9em}
+.verdict.ok{color:var(--ok)}
+.verdict.warn{color:var(--warn)}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:.6rem 0 1rem}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:.8rem;padding:.6rem .55rem .65rem;display:flex;flex-direction:column;gap:.1rem;min-width:0}
+.tl{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tv{font-family:var(--serif);font-weight:600;font-size:1.25rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tv.ok{color:var(--ok)}
+.tv.warn{color:var(--warn)}
+.tv.over{color:var(--over)}
+.ts{font-size:.78rem;color:var(--muted);min-height:1.1em}
+.bar{height:.5rem;border-radius:.3rem;background:var(--bg2);border:1px solid var(--line);margin-top:.35rem;overflow:hidden}
+.fill{height:100%;width:0;background:var(--accent);border-radius:.3rem;transition:width .35s ease}
+.fill.over{background:var(--over)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:.9rem .9rem 1rem;margin:0 0 1rem}
+.card h2{font-family:var(--serif);font-weight:600;font-size:1.1rem;margin:0 0 .5rem;color:var(--accent-hi)}
+#chart{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:.25rem .9rem;margin:.5rem 0 0;font-size:.82rem;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:.7rem;height:.7rem;border-radius:50%;margin-right:.35rem;vertical-align:-1px;background:var(--accent)}
+.legend .l2::before{background:var(--ok)}
+.legend .l3::before{background:var(--lilac)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{display:inline-flex;align-items:center;gap:.4rem;min-height:44px;padding:.35rem .85rem;border-radius:2rem;border:1px solid var(--accent);background:var(--card2);cursor:pointer;font-weight:600}
+.chip small{color:var(--accent-hi);font-weight:500;font-size:.85rem}
+.chip:hover{background:#3a2a30}
+.chip.custom{border-style:dashed;background:transparent}
+.chip:active{transform:scale(.97)}
+.logmsg{min-height:1.4em;margin:.6rem 0 0;font-size:.92rem;color:var(--ok)}
+.loghead{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem}
+.loghead h2{margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:.5rem 1rem;border-radius:.75rem;border:0;background:var(--accent-dk);color:#fff;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--accent-dk2)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn.danger{background:transparent;border:1px solid var(--over);color:var(--over)}
+.btn.danger.armed{background:var(--over);color:#2a0b0b}
+.btn.full{width:100%}
+#logList{list-style:none;margin:0;padding:0}
+#logList li{display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-top:1px solid var(--line)}
+#logList li:first-child{border-top:0}
+#logList .info{flex:1;min-width:0}
+#logList .nm{display:block;font-weight:600;overflow-wrap:anywhere}
+#logList .meta{display:block;font-size:.85rem;color:var(--muted)}
+.del{width:44px;height:44px;flex:0 0 auto;border:0;background:none;color:var(--muted);font-size:1.5rem;cursor:pointer;border-radius:.6rem}
+.del:hover{background:rgba(255,255,255,.07);color:var(--over)}
+.empty{margin:.2rem 0 0;color:var(--muted);font-size:.95rem}
+.note{font-size:.82rem;color:var(--muted);margin:0 0 .5rem}
+footer{padding:1rem 1rem calc(1.2rem + env(safe-area-inset-bottom));text-align:center;border-top:1px solid var(--line)}
+footer a{display:inline-flex;align-items:center;min-height:44px;font-size:.92rem}
+label{display:block;font-size:.9rem;color:var(--muted);margin:.7rem 0 .3rem}
+.field{width:100%;min-height:48px;background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:.6rem;padding:.55rem .7rem;font:inherit}
+.field.bad{border-color:var(--over)}
+input[type=range]{width:100%;min-height:44px;accent-color:var(--accent)}
+.field:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--accent-hi);outline-offset:2px}
+.err{min-height:1.3em;margin:.5rem 0 0;color:var(--over);font-size:.9rem}
+.modal{position:fixed;inset:0;z-index:20;background:rgba(8,4,6,.72);display:flex;align-items:flex-end;justify-content:center;padding:0}
+.modal[hidden]{display:none}
+.box{width:100%;max-width:34rem;max-height:92dvh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:1.1rem 1.1rem 0 0;padding:1rem 1rem calc(1.2rem + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch}
+@media (min-width:600px){.modal{align-items:center;padding:1rem}.box{border-radius:1.1rem}}
+.boxhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem}
+.boxhead h2{font-family:var(--serif);font-weight:600;font-size:1.2rem;margin:0;color:var(--accent-hi)}
+.row2{display:flex;gap:.6rem;margin-top:1rem}
+.row2 .btn{flex:1}
+.hl{display:flex;justify-content:space-between;align-items:baseline}
+.hl output{font-family:var(--serif);font-weight:600;color:var(--accent-hi);font-size:1.1rem}
+.sec{margin-top:1.1rem;padding-top:.3rem;border-top:1px solid var(--line)}
+.sec h3{font-size:1rem;margin:.6rem 0 .2rem;color:var(--text)}
+.hint{font-size:.85rem;color:var(--muted);margin:.15rem 0 0}
+.prow{display:flex;gap:.4rem;align-items:center;margin-top:.45rem}
+.prow .pn{flex:1;min-width:0}
+.prow .pm{width:5.2rem;flex:0 0 auto}
+#logList .editbtn{display:block;text-align:left;background:none;border:0;color:inherit;cursor:pointer;padding:.3rem .2rem;min-height:44px;border-radius:.5rem;font:inherit}
+#logList .editbtn:hover{background:rgba(255,255,255,.05)}
+.donebtn{min-height:44px;padding:.3rem .7rem;border-radius:.6rem;border:1px solid var(--ok);background:transparent;color:var(--ok);font-weight:600;cursor:pointer;flex:0 0 auto}
+.donebtn:hover{background:rgba(127,209,160,.12)}
+@media (max-width:380px){.topbar{padding-left:.6rem;padding-right:.35rem}.topbar h1{font-size:1rem}.home{font-size:.82rem;padding:0 .3rem}.tv{font-size:1.1rem}.tile{padding:.5rem .4rem .55rem}}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="badge">159</span>
+  <h1>Caffeine Tracker</h1>
+  <a class="home" href="https://augustineiacopelli.github.io/appaday/">AppADay</a>
+  <button type="button" class="iconbtn" id="gearBtn" aria-label="Settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+</header>
+
+<main>
+  <section class="hero" aria-label="Current caffeine level">
+    <p class="readout"><span id="mgNow">0</span><span class="unit">mg</span></p>
+    <p class="caption">of caffeine in your blood right now</p>
+    <p class="absorb" id="absorbing" role="status"></p>
+    <p class="verdict" id="verdict"></p>
+  </section>
+
+  <section class="strip" aria-label="Summary">
+    <div class="tile">
+      <span class="tl">Safe by</span>
+      <span class="tv" id="clearVal">--</span>
+      <span class="ts" id="clearSub"></span>
+    </div>
+    <div class="tile">
+      <span class="tl">At bedtime</span>
+      <span class="tv" id="bedVal">0 mg</span>
+      <span class="ts" id="bedSub"></span>
+    </div>
+    <div class="tile">
+      <span class="tl">Today</span>
+      <span class="tv" id="dayVal">0 mg</span>
+      <span class="ts" id="daySub">of 400 mg</span>
+      <div class="bar" aria-hidden="true"><div class="fill" id="dayFill"></div></div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="chartTitle">
+    <h2 id="chartTitle">Your caffeine curve</h2>
+    <svg id="chart" viewBox="0 0 360 214" role="img" aria-label="Caffeine curve"></svg>
+    <p class="legend"><span>Your level</span><span class="l2">Sleep safe line</span><span class="l3">Bedtime</span></p>
+  </section>
+
+  <section class="card" aria-labelledby="logTitle">
+    <h2 id="logTitle">Log a drink</h2>
+    <div class="chips" id="chips"></div>
+    <p class="logmsg" id="logMsg" role="status"></p>
+  </section>
+
+  <section class="card" aria-labelledby="doseTitle">
+    <div class="loghead">
+      <h2 id="doseTitle">Dose log</h2>
+      <button type="button" class="btn" id="addBtn">+ Add dose</button>
+    </div>
+    <p class="hint" style="margin:0 0 .3rem">Tap a dose to edit it. Done ends a drink you are still sipping.</p>
+    <ul id="logList"></ul>
+    <p class="empty" id="logEmpty">Nothing logged in the last 48 hours.</p>
+  </section>
+
+  <p class="note">A planning estimate, not medical advice. It assumes caffeine absorbs over about an hour and then fades at a steady half life. Your real rate varies with genetics, medication, pregnancy, and liver health.</p>
+</main>
+
+<footer>
+  <a href="https://augustineiacopelli.github.io/appaday/">AppADay portfolio</a>
+</footer>
+
+<div class="modal" id="addModal" hidden role="dialog" aria-modal="true" aria-labelledby="addTitle">
+  <div class="box">
+    <div class="boxhead"><h2 id="addTitle">Add a dose</h2><button type="button" class="iconbtn" data-close aria-label="Close">&times;</button></div>
+    <form id="addForm" novalidate>
+      <label for="addName">Drink name</label>
+      <input class="field" id="addName" type="text" maxlength="24" placeholder="Coffee" autocomplete="off">
+      <label for="addMg">Caffeine in milligrams</label>
+      <input class="field" id="addMg" type="number" inputmode="decimal" min="1" max="1000" step="any" placeholder="95">
+      <label for="addTime">Started</label>
+      <input class="field" id="addTime" type="time">
+      <label for="addEnd">Finished (optional)</label>
+      <input class="field" id="addEnd" type="time">
+      <button type="button" class="btn ghost full" id="addEndNow" style="margin-top:.5rem">Finished just now</button>
+      <p class="hint">Leave Finished blank if you drank it all at once. A sipped drink spreads its caffeine evenly from start to finish. A start later than now counts as yesterday.</p>
+      <p class="err" id="addErr" role="alert"></p>
+      <div class="row2">
+        <button type="button" class="btn ghost" data-close>Cancel</button>
+        <button type="submit" class="btn" id="addSubmit">Add dose</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="setModal" hidden role="dialog" aria-modal="true" aria-labelledby="setTitle">
+  <div class="box">
+    <div class="boxhead"><h2 id="setTitle">Settings</h2><button type="button" class="iconbtn" data-close aria-label="Close">&times;</button></div>
+
+    <div class="hl" style="margin-top:.6rem"><label for="halfRange" style="margin:0">Caffeine half life</label><output id="halfOut" for="halfRange">5 h</output></div>
+    <input type="range" id="halfRange" min="3" max="7" step="0.5" value="5">
+    <p class="hint">Typical adults land between 4 and 6 hours. Slide toward 7 if you clear caffeine slowly.</p>
+
+    <label for="bedTime">Bedtime</label>
+    <input class="field" id="bedTime" type="time" value="23:00">
+
+    <label for="thrMg">Sleep safe threshold in mg</label>
+    <input class="field" id="thrMg" type="number" inputmode="decimal" min="5" max="200" step="1" value="50">
+    <p class="hint">The level you want to be under when the lights go out.</p>
+
+    <div class="hl" style="margin-top:.9rem"><label for="sipRange" style="margin:0">Sip time for one tap drinks</label><output id="sipOut" for="sipRange">0 min</output></div>
+    <input type="range" id="sipRange" min="0" max="120" step="5" value="0">
+    <p class="hint">0 counts the whole drink the moment you tap it. Set 20 or 30 if you usually sip a cup over that long.</p>
+
+    <div class="sec">
+      <h3>Quick drinks</h3>
+      <p class="hint">Edit the one tap chips. Up to 8 drinks.</p>
+      <div id="presetList"></div>
+      <button type="button" class="btn ghost full" id="addPreset" style="margin-top:.7rem">+ Add a drink</button>
+    </div>
+
+    <div class="sec">
+      <h3>Reset</h3>
+      <p class="hint">Removes every logged dose. Your settings and drinks stay.</p>
+      <button type="button" class="btn danger full" id="clearBtn" style="margin-top:.5rem">Clear all doses</button>
+    </div>
+
+    <div class="row2"><button type="button" class="btn" data-close>Done</button></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- constants ---------- */
+  var STORE_KEY = 'appaday-159-caffeine';
+  var HOUR = 3600000;
+  var DAY = 24 * HOUR;
+  var DAILY_LIMIT = 400;
+  var PRUNE_MS = 48 * HOUR;
+  var MAX_PRESETS = 8;
+  var DEFAULT_PRESETS = [
+    { name: 'Coffee', mg: 95 },
+    { name: 'Espresso', mg: 64 },
+    { name: 'Black tea', mg: 47 },
+    { name: 'Green tea', mg: 28 },
+    { name: 'Cola', mg: 34 },
+    { name: 'Energy drink', mg: 80 }
+  ];
+  var DEFAULT_SETTINGS = { half: 5, bed: '23:00', thr: 50, sip: 0 };
+  var MAX_SIP_MS = 12 * HOUR;
+  var KA = 5.5; /* rate of each of two absorption stages per hour: a gulped drink peaks about an hour in, with a rounded start */
+
+  /* ---------- pure functions ---------- */
+  /* Blood level from 1 mg gulped x hours ago. Caffeine passes through two absorption stages (stomach, then gut)
+     at rate KA each, and is eliminated at ke = ln2 / half life. With a = KA - ke:
+     gk(x) = KA^2 * (e^(-ke x) - e^(-KA x) * (1 + a x)) / a^2.
+     It starts flat, rises smoothly, peaks, then decays. */
+  function gk(x, ke) {
+    if (!(x > 0)) { return 0; }
+    var a = KA - ke;
+    return KA * KA * (Math.exp(-ke * x) - Math.exp(-KA * x) * (1 + a * x)) / (a * a);
+  }
+  /* running total of gk from 0 to x, used to add up a drink that is sipped over a window */
+  function Fk(x, ke) {
+    if (!(x > 0)) { return 0; }
+    var a = KA - ke;
+    return KA * KA / (a * a) * ((1 - Math.exp(-ke * x)) / ke - (1 - Math.exp(-KA * x)) / KA -
+      (a / (KA * KA)) * (1 - Math.exp(-KA * x) * (1 + KA * x)));
+  }
+  /* share of a gulp still unabsorbed after x hours, and its running total */
+  function ukk(x) { return x > 0 ? Math.exp(-KA * x) * (1 + KA * x) : 1; }
+  function Uk(x) { return x > 0 ? (2 - Math.exp(-KA * x) * (2 + KA * x)) / KA : 0; }
+
+  /* A dose runs from d.t (start) to d.e (finish). Gulped (no finish, or under a minute): all of it enters at d.t.
+     Sipped: it enters evenly across the window. Either way each bit then absorbs gradually and decays. */
+  function remaining(doses, tMs, halfH) {
+    var total = 0;
+    if (!doses || !(halfH > 0) || !isFinite(tMs)) { return 0; }
+    var ke = Math.LN2 / halfH;
+    for (var i = 0; i < doses.length; i++) {
+      var d = doses[i];
+      if (!(d.mg > 0) || d.t > tMs) { continue; }
+      var dur = (d.e || d.t) - d.t;
+      if (!(dur >= 60000)) {
+        total += d.mg * gk((tMs - d.t) / HOUR, ke);
+      } else {
+        var uEnd = Math.min(tMs, d.e);
+        total += (d.mg / (dur / HOUR)) * (Fk((tMs - d.t) / HOUR, ke) - Fk((tMs - uEnd) / HOUR, ke));
+      }
+    }
+    return isFinite(total) ? total : 0;
+  }
+
+  /* milligrams already swallowed that have not been absorbed into the blood yet */
+  function unabsorbed(doses, tMs) {
+    var total = 0;
+    for (var i = 0; i < doses.length; i++) {
+      var d = doses[i];
+      if (!(d.mg > 0) || d.t > tMs) { continue; }
+      var dur = (d.e || d.t) - d.t;
+      if (!(dur >= 60000)) {
+        total += d.mg * ukk((tMs - d.t) / HOUR);
+      } else {
+        var uEnd = Math.min(tMs, d.e);
+        total += (d.mg / (dur / HOUR)) * (Uk((tMs - d.t) / HOUR) - Uk((tMs - uEnd) / HOUR));
+      }
+    }
+    return total;
+  }
+
+  /* Once absorption is finished the level is a plain decay, so hours until level S falls to the
+     threshold is t = h * log2(S / threshold). */
+  function clearTime(S, halfH, thr) {
+    if (!(S > 0) || !(thr > 0) || !(halfH > 0) || S <= thr) { return 0; }
+    return halfH * (Math.log(S / thr) / Math.LN2);
+  }
+
+  /* hours from now until the level is under the threshold for good. It scans minute by minute through the
+     rise, the peak and the early decline, then finishes with the exact decay formula for the tail. */
+  function clearHours(doses, nowMs, halfH, thr) {
+    if (!doses || !doses.length || !(thr > 0)) { return 0; }
+    var last = nowMs, i;
+    for (i = 0; i < doses.length; i++) {
+      var en = doses[i].e || doses[i].t;
+      if (en > last) { last = en; }
+    }
+    var step = 60000, stop = last + 8 * HOUR, lastAbove = -1, t;
+    for (t = nowMs; t <= stop; t += step) {
+      if (remaining(doses, t, halfH) > thr) { lastAbove = t; }
+    }
+    var tail = remaining(doses, stop, halfH);
+    if (tail > thr) { return (stop - nowMs) / HOUR + clearTime(tail, halfH, thr); }
+    if (lastAbove < 0) { return 0; }
+    var lo = lastAbove, hi = lastAbove + step;
+    for (i = 0; i < 20; i++) {
+      var mid = (lo + hi) / 2;
+      if (remaining(doses, mid, halfH) > thr) { lo = mid; } else { hi = mid; }
+    }
+    return (hi - nowMs) / HOUR;
+  }
+
+  function startOfDay(ms) {
+    var d = new Date(ms);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+
+  function parseHM(str) {
+    var m = /^(\d{1,2}):(\d{2})$/.exec(String(str || ''));
+    if (!m) { return null; }
+    var h = parseInt(m[1], 10), mi = parseInt(m[2], 10);
+    if (h > 23 || mi > 59) { return null; }
+    return { h: h, m: mi };
+  }
+
+  /* the next bedtime strictly after now (an earlier clock time means tomorrow) */
+  function nextBedtime(nowMs, hhmm) {
+    var p = parseHM(hhmm) || parseHM(DEFAULT_SETTINGS.bed);
+    var d = new Date(nowMs);
+    d.setHours(p.h, p.m, 0, 0);
+    if (d.getTime() <= nowMs) { d.setDate(d.getDate() + 1); }
+    return d.getTime();
+  }
+
+  function bedtimeMg(doses, nowMs, hhmm, halfH) {
+    return remaining(doses, nextBedtime(nowMs, hhmm), halfH);
+  }
+
+  function dailyTotal(doses, nowMs) {
+    var s = startOfDay(nowMs), total = 0;
+    for (var i = 0; i < doses.length; i++) {
+      if (doses[i].t >= s && doses[i].t <= nowMs + 60000) { total += doses[i].mg; }
+    }
+    return total;
+  }
+
+  window.CaffeineCore = {
+    remaining: remaining, unabsorbed: unabsorbed, clearTime: clearTime, clearHours: clearHours, bedtimeMg: bedtimeMg,
+    dailyTotal: dailyTotal, nextBedtime: nextBedtime
+  };
+
+  /* ---------- state and storage ---------- */
+  var state = null;
+
+  function num(v) { var n = typeof v === 'number' ? v : parseFloat(v); return isFinite(n) ? n : NaN; }
+  function clamp(n, lo, hi) { return Math.min(hi, Math.max(lo, n)); }
+  function newId() { return String(Date.now()) + '-' + Math.floor(Math.random() * 1e6); }
+
+  function sanitize(raw, now) {
+    var out = {
+      doses: [],
+      settings: { half: DEFAULT_SETTINGS.half, bed: DEFAULT_SETTINGS.bed, thr: DEFAULT_SETTINGS.thr },
+      presets: DEFAULT_PRESETS.map(function (p) { return { name: p.name, mg: p.mg }; })
+    };
+    if (!raw || typeof raw !== 'object') { return out; }
+    var i;
+    if (raw.settings && typeof raw.settings === 'object') {
+      var h = num(raw.settings.half);
+      if (!isNaN(h)) { out.settings.half = clamp(Math.round(h * 2) / 2, 3, 7); }
+      if (parseHM(raw.settings.bed)) { out.settings.bed = raw.settings.bed; }
+      var th = num(raw.settings.thr);
+      if (!isNaN(th)) { out.settings.thr = clamp(th, 5, 200); }
+      var sp = num(raw.settings.sip);
+      if (!isNaN(sp)) { out.settings.sip = clamp(Math.round(sp / 5) * 5, 0, 120); }
+    }
+    if (Array.isArray(raw.presets)) {
+      var ps = [];
+      for (i = 0; i < raw.presets.length && ps.length < MAX_PRESETS; i++) {
+        var p = raw.presets[i];
+        if (!p || typeof p.name !== 'string') { continue; }
+        var nm = p.name.trim().slice(0, 24), mg = num(p.mg);
+        if (nm && !isNaN(mg) && mg >= 1 && mg <= 1000) { ps.push({ name: nm, mg: Math.round(mg * 10) / 10 }); }
+      }
+      out.presets = ps;
+    }
+    if (Array.isArray(raw.doses)) {
+      for (i = 0; i < raw.doses.length; i++) {
+        var d = raw.doses[i];
+        if (!d || typeof d !== 'object') { continue; }
+        var t = num(d.t), dm = num(d.mg);
+        if (isNaN(t) || isNaN(dm) || dm <= 0 || dm > 1000) { continue; }
+        if (t < now - PRUNE_MS || t > now + 60000) { continue; }
+        var label = typeof d.label === 'string' && d.label.trim() ? d.label.trim().slice(0, 24) : 'Dose';
+        var te = num(d.e);
+        if (isNaN(te) || te < t || te - t > MAX_SIP_MS || te > now + MAX_SIP_MS) { te = t; }
+        out.doses.push({ id: typeof d.id === 'string' && d.id ? d.id : newId(), t: t, e: te, mg: Math.round(dm * 10) / 10, label: label });
+      }
+      out.doses.sort(function (a, b) { return a.t - b.t; });
+    }
+    return out;
+  }
+
+  function load() {
+    var raw = null;
+    try { raw = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { raw = null; }
+    return sanitize(raw, Date.now());
+  }
+
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+  }
+
+  function prune(now) {
+    var keep = state.doses.filter(function (d) { return d.t >= now - PRUNE_MS; });
+    if (keep.length !== state.doses.length) { state.doses = keep; save(); }
+  }
+
+  /* ---------- helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function clearNode(n) { while (n.firstChild) { n.removeChild(n.firstChild); } }
+  function fmtMg(x) { return isFinite(x) && x > 0 ? String(Math.round(x)) : '0'; }
+  function fmtClock(ms) {
+    var d = new Date(ms), h = d.getHours(), m = d.getMinutes();
+    return ((h % 12) || 12) + ':' + (m < 10 ? '0' : '') + m + ' ' + (h >= 12 ? 'PM' : 'AM');
+  }
+  function fmtHM(hhmm) {
+    var p = parseHM(hhmm) || parseHM(DEFAULT_SETTINGS.bed);
+    return ((p.h % 12) || 12) + ':' + (p.m < 10 ? '0' : '') + p.m + ' ' + (p.h >= 12 ? 'PM' : 'AM');
+  }
+  var WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  function dayWord(ms, now) {
+    var diff = Math.round((startOfDay(ms) - startOfDay(now)) / DAY);
+    if (diff === 0) { return ''; }
+    if (diff === 1) { return 'tomorrow'; }
+    if (diff === -1) { return 'yesterday'; }
+    return WD[new Date(ms).getDay()];
+  }
+  function fmtHours(h) {
+    var mins = Math.round(h * 60);
+    var hh = Math.floor(mins / 60), mm = mins % 60;
+    if (hh === 0) { return mm + ' min'; }
+    return hh + ' h' + (mm ? ' ' + mm + ' min' : '');
+  }
+
+  /* ---------- rendering ---------- */
+  function renderReadout(now) {
+    var s = state.settings;
+    var cur = remaining(state.doses, now, s.half);
+    var bedAt = nextBedtime(now, s.bed);
+    var bedMg = remaining(state.doses, bedAt, s.half);
+    var total = dailyTotal(state.doses, now);
+    var hrs = clearHours(state.doses, now, s.half, s.thr);
+
+    $('mgNow').textContent = fmtMg(cur);
+    var ab = unabsorbed(state.doses, now);
+    $('absorbing').textContent = ab >= 1 ? 'plus ' + fmtMg(ab) + ' mg still absorbing' : '';
+
+    var cv = $('clearVal'), cs = $('clearSub');
+    cv.className = 'tv';
+    if (cur <= 0.0001 && state.doses.length === 0) {
+      cv.textContent = 'Clear'; cv.classList.add('ok'); cs.textContent = 'nothing logged';
+    } else if (hrs <= 0) {
+      cv.textContent = 'Now'; cv.classList.add('ok'); cs.textContent = 'under ' + Math.round(s.thr) + ' mg';
+    } else {
+      var at = now + hrs * HOUR;
+      cv.textContent = fmtClock(at);
+      cs.textContent = dayWord(at, now) || 'under ' + Math.round(s.thr) + ' mg';
+    }
+
+    var bv = $('bedVal');
+    bv.className = 'tv ' + (bedMg <= s.thr ? 'ok' : 'warn');
+    bv.textContent = fmtMg(bedMg) + ' mg';
+    $('bedSub').textContent = fmtHM(s.bed);
+
+    var dv = $('dayVal');
+    dv.className = 'tv' + (total > DAILY_LIMIT ? ' over' : '');
+    dv.textContent = fmtMg(total) + ' mg';
+    $('daySub').textContent = 'of ' + DAILY_LIMIT + ' mg';
+    var fill = $('dayFill');
+    fill.style.width = clamp(total / DAILY_LIMIT * 100, 0, 100) + '%';
+    fill.className = 'fill' + (total > DAILY_LIMIT ? ' over' : '');
+
+    var vd = $('verdict');
+    vd.className = 'verdict';
+    if (state.doses.length === 0) {
+      vd.textContent = 'Nothing logged yet. Tap a drink below to start your curve.';
+    } else if (bedMg <= s.thr) {
+      vd.classList.add('ok');
+      vd.textContent = 'You should be under your ' + Math.round(s.thr) + ' mg line by bedtime, with about ' + fmtMg(bedMg) + ' mg left at lights out.';
+    } else {
+      vd.classList.add('warn');
+      var bedHrs = (bedAt - now) / HOUR;
+      var late = hrs - bedHrs;
+      vd.textContent = 'About ' + fmtMg(bedMg) + ' mg will still be on board at bedtime, ' + fmtMg(bedMg - s.thr) + ' over your line.' +
+        (late > 0 ? ' You reach ' + Math.round(s.thr) + ' mg about ' + fmtHours(late) + ' after lights out.' : '');
+    }
+    return { cur: cur, bedAt: bedAt, bedMg: bedMg };
+  }
+
+  function svgEl(name, attrs, text) {
+    var e = document.createElementNS('http://www.w3.org/2000/svg', name);
+    for (var k in attrs) { if (Object.prototype.hasOwnProperty.call(attrs, k)) { e.setAttribute(k, String(attrs[k])); } }
+    if (text !== undefined) { e.textContent = text; }
+    return e;
+  }
+
+  function renderChart(now, info) {
+    var svg = $('chart');
+    clearNode(svg);
+    var s = state.settings;
+    var W = 360, H = 214, PL = 34, PR = 10, PT = 30, PB = 26;
+    var PW = W - PL - PR, PH = H - PT - PB;
+    var t0 = now - 6 * HOUR, step = 10 * 60000, n = 145;
+    var vals = [], maxV = 0, i;
+    for (i = 0; i < n; i++) {
+      var v = remaining(state.doses, t0 + i * step, s.half);
+      vals.push(v);
+      if (v > maxV) { maxV = v; }
+    }
+    var ymax = Math.max(100, Math.ceil(Math.max(maxV, s.thr * 1.5) * 1.1 / 50) * 50);
+    function X(t) { return PL + (t - t0) / (24 * HOUR) * PW; }
+    function Y(v) { return PT + PH * (1 - Math.min(v, ymax) / ymax); }
+    function f(x) { return x.toFixed(1); }
+
+    svg.setAttribute('aria-label', 'Caffeine curve from 6 hours ago to 18 hours ahead. Now ' + fmtMg(info.cur) + ' mg, ' +
+      fmtMg(info.bedMg) + ' mg at bedtime.');
+
+    svg.appendChild(svgEl('rect', { x: PL, y: PT, width: PW, height: PH, fill: '#1d1417', rx: 4 }));
+    svg.appendChild(svgEl('rect', { x: PL, y: PT, width: X(now) - PL, height: PH, fill: '#ffffff', 'fill-opacity': 0.04 }));
+
+    var gl = [0, ymax / 2, ymax];
+    for (i = 0; i < gl.length; i++) {
+      svg.appendChild(svgEl('line', { x1: PL, x2: PL + PW, y1: f(Y(gl[i])), y2: f(Y(gl[i])), stroke: '#43323a', 'stroke-width': 1 }));
+      svg.appendChild(svgEl('text', { x: PL - 5, y: f(Y(gl[i]) + 3.5), 'text-anchor': 'end', 'font-size': 10, fill: '#c3b0b7' }, String(Math.round(gl[i]))));
+    }
+
+    var tk = new Date(t0);
+    tk.setMinutes(0, 0, 0);
+    if (tk.getTime() < t0) { tk.setHours(tk.getHours() + 1); }
+    for (var guard = 0; guard < 30 && tk.getTime() <= t0 + 24 * HOUR; guard++) {
+      var hr = tk.getHours();
+      if (hr % 6 === 0) {
+        var tx = X(tk.getTime());
+        svg.appendChild(svgEl('line', { x1: f(tx), x2: f(tx), y1: PT + PH, y2: PT + PH + 4, stroke: '#7d6a72', 'stroke-width': 1 }));
+        svg.appendChild(svgEl('text', { x: f(tx), y: H - 7, 'text-anchor': 'middle', 'font-size': 10, fill: '#c3b0b7' }, ((hr % 12) || 12) + (hr >= 12 ? ' PM' : ' AM')));
+      }
+      tk.setHours(tk.getHours() + 1);
+    }
+
+    var px = [], py = [];
+    for (i = 0; i < n; i++) { px.push(X(t0 + i * step)); py.push(Y(vals[i])); }
+    function yc(v) { return Math.min(PT + PH, Math.max(PT, v)); }
+    var d = 'M' + f(px[0]) + ' ' + f(py[0]) + ' ';
+    for (i = 0; i < n - 1; i++) {
+      var im = Math.max(0, i - 1), ip = Math.min(n - 1, i + 2);
+      d += 'C' + f(px[i] + (px[i + 1] - px[im]) / 6) + ' ' + f(yc(py[i] + (py[i + 1] - py[im]) / 6)) + ' ' +
+        f(px[i + 1] - (px[ip] - px[i]) / 6) + ' ' + f(yc(py[i + 1] - (py[ip] - py[i]) / 6)) + ' ' +
+        f(px[i + 1]) + ' ' + f(py[i + 1]) + ' ';
+    }
+    svg.appendChild(svgEl('path', { d: d + 'L' + f(PL + PW) + ' ' + f(PT + PH) + ' L' + f(PL) + ' ' + f(PT + PH) + ' Z', fill: '#D14D72', 'fill-opacity': 0.2 }));
+    svg.appendChild(svgEl('path', { d: d.trim(), fill: 'none', stroke: '#D14D72', 'stroke-width': 2.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }));
+
+    var ty = Y(s.thr);
+    svg.appendChild(svgEl('line', { x1: PL, x2: PL + PW, y1: f(ty), y2: f(ty), stroke: '#7fd1a0', 'stroke-width': 1.5, 'stroke-dasharray': '5 4' }));
+    svg.appendChild(svgEl('text', { x: PL + PW - 3, y: f(ty - 4), 'text-anchor': 'end', 'font-size': 10, fill: '#7fd1a0' }, 'sleep safe ' + Math.round(s.thr) + ' mg'));
+
+    for (i = 0; i < state.doses.length; i++) {
+      var dt = state.doses[i].t;
+      if (dt >= t0 && dt <= t0 + 24 * HOUR) {
+        var de = state.doses[i].e || dt;
+        if (de - dt >= 60000) {
+          svg.appendChild(svgEl('line', { x1: f(X(dt)), x2: f(Math.min(X(de), PL + PW)), y1: f(PT + PH), y2: f(PT + PH), stroke: '#f08aa6', 'stroke-width': 4, 'stroke-linecap': 'round' }));
+        }
+        svg.appendChild(svgEl('circle', { cx: f(X(dt)), cy: f(PT + PH), r: 2.8, fill: '#f08aa6' }));
+      }
+    }
+
+    var xn = X(now);
+    svg.appendChild(svgEl('line', { x1: f(xn), x2: f(xn), y1: PT - 6, y2: PT + PH, stroke: '#f6eef0', 'stroke-opacity': 0.6, 'stroke-width': 1.5, 'stroke-dasharray': '2 3' }));
+    svg.appendChild(svgEl('circle', { cx: f(xn), cy: f(Y(info.cur)), r: 4.5, fill: '#D14D72', stroke: '#ffffff', 'stroke-width': 1.5 }));
+    svg.appendChild(svgEl('text', { x: f(xn), y: 10, 'text-anchor': 'middle', 'font-size': 10, fill: '#f6eef0' }, 'Now'));
+
+    var bedAt = info.bedAt;
+    if (bedAt >= t0 && bedAt <= t0 + 24 * HOUR) {
+      var xb = X(bedAt);
+      svg.appendChild(svgEl('line', { x1: f(xb), x2: f(xb), y1: PT - 6, y2: PT + PH, stroke: '#b9acff', 'stroke-width': 1.5 }));
+      svg.appendChild(svgEl('circle', { cx: f(xb), cy: f(Y(info.bedMg)), r: 4.5, fill: '#b9acff', stroke: '#150e10', 'stroke-width': 1.5 }));
+      var ly = Math.abs(xb - xn) < 34 ? 22 : 10;
+      svg.appendChild(svgEl('text', { x: f(xb), y: ly, 'text-anchor': xb > W - 40 ? 'end' : 'middle', 'font-size': 10, fill: '#b9acff' }, 'Bed ' + fmtMg(info.bedMg) + ' mg'));
+    }
+  }
+
+  function renderChips() {
+    var box = $('chips');
+    clearNode(box);
+    state.presets.forEach(function (p) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.setAttribute('aria-label', 'Log ' + p.name + ', ' + p.mg + ' milligrams');
+      b.appendChild(document.createTextNode(p.name + ' '));
+      var sm = document.createElement('small');
+      sm.textContent = String(p.mg);
+      b.appendChild(sm);
+      b.addEventListener('click', function () { var n0 = Date.now(); addDose(p.name, p.mg, n0, n0 + state.settings.sip * 60000, true); });
+      box.appendChild(b);
+    });
+    var c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'chip custom';
+    c.textContent = 'Custom';
+    c.addEventListener('click', function () { openAdd(null); });
+    box.appendChild(c);
+  }
+
+  function renderLog(now) {
+    var ul = $('logList');
+    clearNode(ul);
+    var list = state.doses.slice().sort(function (a, b) { return b.t - a.t; });
+    $('logEmpty').style.display = list.length ? 'none' : 'block';
+    list.forEach(function (d) {
+      var li = document.createElement('li');
+      var info = document.createElement('button');
+      info.type = 'button';
+      info.className = 'info editbtn';
+      info.setAttribute('aria-label', 'Edit ' + d.label + ' at ' + fmtClock(d.t));
+      info.addEventListener('click', function () { openAdd(d); });
+      var nm = document.createElement('span');
+      nm.className = 'nm';
+      nm.textContent = d.label + ', ' + d.mg + ' mg';
+      var meta = document.createElement('span');
+      meta.className = 'meta';
+      var w = dayWord(d.t, now);
+      var span = (d.e || d.t) - d.t >= 60000 ? fmtClock(d.t) + ' to ' + fmtClock(d.e) : fmtClock(d.t);
+      meta.textContent = span + (w ? ' ' + w : '') + ', ' + fmtMg(remaining([d], now, state.settings.half)) + ' mg left';
+      info.appendChild(nm);
+      info.appendChild(meta);
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'del';
+      del.setAttribute('aria-label', 'Delete ' + d.label + ' at ' + fmtClock(d.t));
+      del.textContent = '\u00d7';
+      del.addEventListener('click', function () { removeDose(d.id); });
+      li.appendChild(info);
+      if ((d.e || d.t) > now + 60000) {
+        var dn = document.createElement('button');
+        dn.type = 'button';
+        dn.className = 'donebtn';
+        dn.textContent = 'Done';
+        dn.setAttribute('aria-label', 'Finished drinking ' + d.label + ' just now');
+        dn.addEventListener('click', function () { finishNow(d.id); });
+        li.appendChild(dn);
+      }
+      li.appendChild(del);
+      ul.appendChild(li);
+    });
+  }
+
+  function render() {
+    var now = Date.now();
+    prune(now);
+    var info = renderReadout(now);
+    renderChart(now, info);
+    renderLog(now);
+  }
+
+  /* ---------- actions ---------- */
+  var msgTimer = null;
+  function flash(text) {
+    var m = $('logMsg');
+    m.textContent = text;
+    if (msgTimer) { clearTimeout(msgTimer); }
+    msgTimer = setTimeout(function () { m.textContent = ''; }, 2500);
+  }
+
+  function addDose(label, mg, t, e, quiet) {
+    var m = Math.round(mg * 10) / 10;
+    if (!isFinite(m) || m <= 0 || m > 1000) { return false; }
+    var name = (label || '').trim().slice(0, 24) || 'Dose';
+    var end = isFinite(e) && e >= t && e - t <= MAX_SIP_MS ? e : t;
+    state.doses.push({ id: newId(), t: t, e: end, mg: m, label: name });
+    state.doses.sort(function (a, b) { return a.t - b.t; });
+    save();
+    render();
+    if (quiet) { flash('Logged ' + name + ', ' + m + ' mg'); }
+    return true;
+  }
+
+  /* the drink is done sooner (or later) than the sip time guessed: close its window at this moment */
+  function finishNow(id) {
+    var n = Date.now();
+    for (var i = 0; i < state.doses.length; i++) {
+      var d = state.doses[i];
+      if (d.id === id) {
+        d.e = n >= d.t + 60000 ? n : d.t;
+        break;
+      }
+    }
+    save();
+    render();
+    flash('Finish time set to now');
+  }
+
+  function removeDose(id) {
+    state.doses = state.doses.filter(function (d) { return d.id !== id; });
+    save();
+    render();
+  }
+
+  /* ---------- modals ---------- */
+  var lastFocus = null;
+  function openModal(el, focusEl) {
+    lastFocus = document.activeElement;
+    el.hidden = false;
+    document.body.classList.add('lock');
+    if (focusEl) { focusEl.focus(); }
+  }
+  function closeModal(el) {
+    el.hidden = true;
+    var any = document.querySelector('.modal:not([hidden])');
+    if (!any) { document.body.classList.remove('lock'); }
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) { /* ignore */ } }
+  }
+
+  var editingId = null;
+
+  function hm(ms) {
+    var d = new Date(ms);
+    return (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+  }
+
+  function openAdd(dose) {
+    editingId = dose && dose.id ? dose.id : null;
+    $('addTitle').textContent = editingId ? 'Edit dose' : 'Add a dose';
+    $('addSubmit').textContent = editingId ? 'Save changes' : 'Add dose';
+    if (editingId) {
+      $('addName').value = dose.label;
+      $('addMg').value = String(dose.mg);
+      $('addTime').value = hm(dose.t);
+      $('addEnd').value = (dose.e || dose.t) - dose.t >= 60000 ? hm(dose.e) : '';
+    } else {
+      $('addName').value = '';
+      $('addMg').value = '';
+      $('addTime').value = hm(Date.now());
+      $('addEnd').value = '';
+    }
+    $('addErr').textContent = '';
+    $('addMg').classList.remove('bad');
+    $('addTime').classList.remove('bad');
+    $('addEnd').classList.remove('bad');
+    openModal($('addModal'), editingId ? $('addMg') : $('addName'));
+  }
+
+  function submitAdd(e) {
+    e.preventDefault();
+    var mgEl = $('addMg'), timeEl = $('addTime'), endEl = $('addEnd'), err = $('addErr');
+    mgEl.classList.remove('bad');
+    timeEl.classList.remove('bad');
+    endEl.classList.remove('bad');
+    var mg = parseFloat(mgEl.value);
+    if (!isFinite(mg) || mg < 1 || mg > 1000) {
+      err.textContent = 'Enter the caffeine amount, between 1 and 1000 mg.';
+      mgEl.classList.add('bad');
+      mgEl.focus();
+      return;
+    }
+    var p = parseHM(timeEl.value);
+    if (!p) {
+      err.textContent = 'Enter the time you started.';
+      timeEl.classList.add('bad');
+      timeEl.focus();
+      return;
+    }
+    var now = Date.now();
+    var orig = null;
+    if (editingId) {
+      for (var i = 0; i < state.doses.length; i++) { if (state.doses[i].id === editingId) { orig = state.doses[i]; break; } }
+      if (!orig) {
+        err.textContent = 'That dose is no longer in the log.';
+        return;
+      }
+    }
+    /* an edit keeps the dose's own day; a new dose starts from today */
+    var d = new Date(orig ? orig.t : now);
+    d.setHours(p.h, p.m, 0, 0);
+    var t = d.getTime();
+    if (t > now + 60000) { d.setDate(d.getDate() - 1); t = d.getTime(); }
+    if (t < now - PRUNE_MS) {
+      err.textContent = 'Doses are kept for 48 hours, so the start has to be within the last two days.';
+      timeEl.classList.add('bad');
+      timeEl.focus();
+      return;
+    }
+    var en = t;
+    if (endEl.value) {
+      var q = parseHM(endEl.value);
+      if (!q) {
+        err.textContent = 'Enter the finish time as a clock time.';
+        endEl.classList.add('bad');
+        endEl.focus();
+        return;
+      }
+      var ed = new Date(t);
+      ed.setHours(q.h, q.m, 0, 0);
+      if (ed.getTime() < t) { ed.setDate(ed.getDate() + 1); }
+      en = ed.getTime();
+      if (en - t > MAX_SIP_MS) {
+        err.textContent = 'A drink can run up to 12 hours from start to finish.';
+        endEl.classList.add('bad');
+        endEl.focus();
+        return;
+      }
+      if (en > now + MAX_SIP_MS) { en = t; }
+    }
+    var name = ($('addName').value || '').trim().slice(0, 24) || 'Dose';
+    var amount = Math.round(mg * 10) / 10;
+    if (orig) {
+      orig.label = name;
+      orig.mg = amount;
+      orig.t = t;
+      orig.e = en;
+      state.doses.sort(function (a, b) { return a.t - b.t; });
+      save();
+      render();
+      editingId = null;
+      closeModal($('addModal'));
+      flash('Saved changes to ' + name);
+      return;
+    }
+    addDose(name, amount, t, en, false);
+    closeModal($('addModal'));
+    flash('Added ' + name + ', ' + amount + ' mg');
+  }
+
+  /* ---------- settings ---------- */
+  var armTimer = null;
+  function disarmClear() {
+    var b = $('clearBtn');
+    b.classList.remove('armed');
+    b.textContent = 'Clear all doses';
+    if (armTimer) { clearTimeout(armTimer); armTimer = null; }
+  }
+
+  function renderSettings() {
+    var s = state.settings;
+    $('halfRange').value = String(s.half);
+    $('halfOut').textContent = s.half + ' h';
+    $('bedTime').value = s.bed;
+    $('thrMg').value = String(s.thr);
+    $('sipRange').value = String(s.sip);
+    $('sipOut').textContent = s.sip + ' min';
+    renderPresetEditor();
+    $('addPreset').disabled = state.presets.length >= MAX_PRESETS;
+  }
+
+  function renderPresetEditor() {
+    var box = $('presetList');
+    clearNode(box);
+    state.presets.forEach(function (p, idx) {
+      var row = document.createElement('div');
+      row.className = 'prow';
+      var nm = document.createElement('input');
+      nm.type = 'text';
+      nm.className = 'field pn';
+      nm.maxLength = 24;
+      nm.value = p.name;
+      nm.setAttribute('aria-label', 'Drink name ' + (idx + 1));
+      var mg = document.createElement('input');
+      mg.type = 'number';
+      mg.className = 'field pm';
+      mg.setAttribute('inputmode', 'decimal');
+      mg.min = '1';
+      mg.max = '1000';
+      mg.step = 'any';
+      mg.value = String(p.mg);
+      mg.setAttribute('aria-label', 'Milligrams for ' + p.name);
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'del';
+      del.textContent = '\u00d7';
+      del.setAttribute('aria-label', 'Remove ' + p.name);
+      nm.addEventListener('change', function () {
+        var v = nm.value.trim().slice(0, 24);
+        if (!v) { nm.value = p.name; nm.classList.add('bad'); return; }
+        nm.classList.remove('bad');
+        p.name = v;
+        nm.value = v;
+        save();
+        renderChips();
+      });
+      mg.addEventListener('change', function () {
+        var v = parseFloat(mg.value);
+        if (!isFinite(v) || v < 1 || v > 1000) { mg.value = String(p.mg); mg.classList.add('bad'); return; }
+        mg.classList.remove('bad');
+        p.mg = Math.round(v * 10) / 10;
+        mg.value = String(p.mg);
+        save();
+        renderChips();
+      });
+      del.addEventListener('click', function () {
+        state.presets.splice(idx, 1);
+        save();
+        renderChips();
+        renderSettings();
+      });
+      row.appendChild(nm);
+      row.appendChild(mg);
+      row.appendChild(del);
+      box.appendChild(row);
+    });
+  }
+
+  function wireSettings() {
+    $('halfRange').addEventListener('input', function (e) {
+      var v = clamp(Math.round(parseFloat(e.target.value) * 2) / 2, 3, 7);
+      if (!isFinite(v)) { return; }
+      state.settings.half = v;
+      $('halfOut').textContent = v + ' h';
+      save();
+      render();
+    });
+    $('bedTime').addEventListener('change', function (e) {
+      if (parseHM(e.target.value)) {
+        state.settings.bed = e.target.value;
+        save();
+        render();
+      } else {
+        e.target.value = state.settings.bed;
+      }
+    });
+    $('thrMg').addEventListener('change', function (e) {
+      var v = parseFloat(e.target.value);
+      if (!isFinite(v)) { e.target.value = String(state.settings.thr); return; }
+      state.settings.thr = clamp(v, 5, 200);
+      e.target.value = String(state.settings.thr);
+      save();
+      render();
+    });
+    $('sipRange').addEventListener('input', function (e) {
+      var v = clamp(Math.round(parseFloat(e.target.value) / 5) * 5, 0, 120);
+      if (!isFinite(v)) { return; }
+      state.settings.sip = v;
+      $('sipOut').textContent = v + ' min';
+      save();
+    });
+    $('addPreset').addEventListener('click', function () {
+      if (state.presets.length >= MAX_PRESETS) { return; }
+      state.presets.push({ name: 'New drink', mg: 50 });
+      save();
+      renderChips();
+      renderSettings();
+      var rows = $('presetList').querySelectorAll('.pn');
+      if (rows.length) { rows[rows.length - 1].focus(); rows[rows.length - 1].select(); }
+    });
+    $('clearBtn').addEventListener('click', function () {
+      var b = $('clearBtn');
+      if (!b.classList.contains('armed')) {
+        b.classList.add('armed');
+        b.textContent = 'Tap again to clear all doses';
+        armTimer = setTimeout(disarmClear, 4000);
+        return;
+      }
+      state.doses = [];
+      save();
+      disarmClear();
+      render();
+      flash('All doses cleared');
+    });
+  }
+
+  /* ---------- startup ---------- */
+  function init() {
+    state = load();
+    renderChips();
+    render();
+    wireSettings();
+
+    $('addBtn').addEventListener('click', function () { openAdd(null); });
+    $('addEndNow').addEventListener('click', function () { $('addEnd').value = hm(Date.now()); $('addEnd').classList.remove('bad'); });
+    $('addForm').addEventListener('submit', submitAdd);
+    $('gearBtn').addEventListener('click', function () {
+      disarmClear();
+      renderSettings();
+      openModal($('setModal'), $('halfRange'));
+    });
+
+    var modals = document.querySelectorAll('.modal');
+    Array.prototype.forEach.call(modals, function (m) {
+      m.addEventListener('click', function (e) {
+        if (e.target === m || (e.target.hasAttribute && e.target.hasAttribute('data-close'))) {
+          if (m.id === 'setModal') { disarmClear(); }
+          closeModal(m);
+        }
+      });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        var open = document.querySelector('.modal:not([hidden])');
+        if (open) { if (open.id === 'setModal') { disarmClear(); } closeModal(open); }
+      }
+    });
+
+    setInterval(render, 30000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) { render(); } });
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
